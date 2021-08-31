@@ -20,9 +20,8 @@ from SnowWhiteRobot.__main__ import STATS, TOKEN, USER_INFO
 import SnowWhiteRobot.modules.sql.userinfo_sql as sql
 from SnowWhiteRobot.modules.disable import DisableAbleCommandHandler
 from SnowWhiteRobot.modules.sql.global_bans_sql import is_user_gbanned
-from SnowWhiteRobot.modules.sql.afk_redis import is_user_afk, afk_reason
+from SnowWhiteRobot.modules.sql.afk_sql import is_afk, check_afk_status
 from SnowWhiteRobot.modules.sql.users_sql import get_user_num_chats
-from SnowWhiteRobot.modules.sql.feds_sql import get_user_fbanlist
 from SnowWhiteRobot.modules.helper_funcs.chat_status import sudo_plus
 from SnowWhiteRobot.modules.helper_funcs.extraction import extract_user
 from SnowWhiteRobot import telethn as SaitamaTelethonClient, TIGERS, DRAGONS, DEMONS
@@ -72,11 +71,11 @@ def hpmanager(user):
         if not sql.get_user_bio(user.id):
             new_hp -= no_by_per(total_hp, 10)
 
-        if is_user_afk(user.id):
-            afkst = afk_reason(user.id)
+        if is_afk(user.id):
+            afkst = check_afk_status(user.id)
             # if user is afk and no reason then decrease 7%
             # else if reason exist decrease 5%
-            if not afkst:
+            if not afkst.reason:
                 new_hp -= no_by_per(total_hp, 7)
             else:
                 new_hp -= no_by_per(total_hp, 5)
@@ -225,9 +224,9 @@ def info(update: Update, context: CallbackContext):
         return
 
     rep = message.reply_text(
-        "<code>Appraising...</code>", parse_mode=ParseMode.HTML)
+        "<code>Searching For Information In Databases...</code>", parse_mode=ParseMode.HTML)
 
-    text = (f"╒═══「<b> Appraisal results:</b> 」\n"
+    text = (f"╒═══「<b>Information Extracted From Akatsuki Databases:</b> 」\n"
             f"ID: <code>{user.id}</code>\n"
             f"First Name: {html.escape(user.first_name)}")
 
@@ -242,7 +241,7 @@ def info(update: Update, context: CallbackContext):
     if chat.type != "private" and user_id != bot.id:
         _stext = "\nPresence: <code>{}</code>"
 
-        afk_st = is_user_afk(user.id)
+        afk_st = is_afk(user.id)
         if afk_st:
             text += _stext.format("AFK")
         else:
@@ -272,26 +271,26 @@ def info(update: Update, context: CallbackContext):
     disaster_level_present = False
 
     if user.id == OWNER_ID:
-        text += "\n\nThe Disaster level of this person is 'God'."
+        text += "\n\nThe Path level of this person is 'Deva'."
         disaster_level_present = True
     elif user.id in DEV_USERS:
-        text += "\n\nThis user is Gabi's 'Frined'."
+        text += "\n\nThis user is member of 'Akatsuki/The Path level of this person is 'Animal'."
         disaster_level_present = True
     elif user.id in DRAGONS:
-        text += "\n\nThe Disaster level of this person is 'Dragon'."
+        text += "\n\nThe Path level of this person is 'Asura'."
         disaster_level_present = True
     elif user.id in DEMONS:
-        text += "\n\nThe Disaster level of this person is 'Demon'."
+        text += "\n\nThe Path level of this person is 'Human'."
         disaster_level_present = True
     elif user.id in TIGERS:
-        text += "\n\nThe Disaster level of this person is 'Tiger'."
+        text += "\n\nThe Path level of this person is 'Preta'."
         disaster_level_present = True
     elif user.id in WOLVES:
-        text += "\n\nThe Disaster level of this person is 'Wolf'."
+        text += "\n\nThe Disaster level of this person is 'Naraka'."
         disaster_level_present = True
 
     if disaster_level_present:
-        text += ' [<a href="https://t.me/Gabi_Support_Log/9">?</a>]'.format(
+        text += ' [<a href="https://t.me/PainRobotUpdates/6">?</a>]'.format(
             bot.username)
 
     try:
@@ -461,7 +460,7 @@ def set_about_bio(update: Update, context: CallbackContext):
 
         if user_id == bot.id and sender_id not in DEV_USERS:
             message.reply_text(
-                "Erm... yeah, I only trust Sensei Association to set my bio.")
+                "Erm... yeah, I only trust Heroes Association to set my bio.")
             return
 
         text = message.text
@@ -498,23 +497,26 @@ __help__ = """
 *ID:*
  • `/id`*:* get the current group id. If used by replying to a message, gets that user's id.
  • `/gifid`*:* reply to a gif to me to tell you its file ID.
+
 *Self addded information:* 
  • `/setme <text>`*:* will set your info
  • `/me`*:* will get your or another user's info.
 Examples:
  `/setme I am a wolf.`
  `/me @username(defaults to yours if no user specified)`
+
 *Information others add on you:* 
  • `/bio`*:* will get your or another user's bio. This cannot be set by yourself.
 • `/setbio <text>`*:* while replying, will save another user's bio 
 Examples:
  `/bio @username(defaults to yours if not specified).`
  `/setbio This user is a wolf` (reply to the user)
+
 *Overall Information about you:*
  • `/info`*:* get information about a user. 
  
 *What is that health thingy?*
- Come and see [HP System explained](https://t.me/Gabi_Support_Log/9)
+ Come and see [HP System explained](https://t.me/OnePunchUpdates/192)
 """
 
 SET_BIO_HANDLER = DisableAbleCommandHandler("setbio", set_about_bio)
@@ -543,4 +545,3 @@ __handlers__ = [
     ID_HANDLER, GIFID_HANDLER, INFO_HANDLER, SET_BIO_HANDLER, GET_BIO_HANDLER,
     SET_ABOUT_HANDLER, GET_ABOUT_HANDLER, STATS_HANDLER
 ]
-
