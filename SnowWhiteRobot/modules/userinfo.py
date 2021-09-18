@@ -33,7 +33,7 @@ from SnowWhiteRobot.modules.sql.afk_sql import is_afk, check_afk_status
 from SnowWhiteRobot.modules.sql.users_sql import get_user_num_chats
 from SnowWhiteRobot.modules.helper_funcs.chat_status import sudo_plus
 from SnowWhiteRobot.modules.helper_funcs.extraction import extract_user
-from SnowWhiteRobot import telethn as YoneTelethonClient, TIGERS, DRAGONS, DEMONS
+from SnowWhiteRobot import telethn as SnowTelethonClient, TIGERS, DRAGONS, DEMONS
 
 
 def no_by_per(totalhp, percentage):
